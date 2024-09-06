@@ -1,0 +1,176 @@
+</html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Information Table</title>
+    <style>
+        #stock-table colgroup col {
+            width: auto !important;
+        }
+
+        body {
+            padding: 10px;
+        }
+
+        #min,
+        #max {
+            max-width: 200px;
+            display: inline-block;
+        }
+
+        #header-div {
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+            background: antiquewhite;
+            margin: 0 -10 25px -10px;
+        }
+
+        #stock-table_wrapper {
+            margin: 0 215px;
+        }
+
+        #filterButton {
+            margin-left: 10px;
+            margin-bottom: 5px;
+        }
+
+        table#stock-table {
+            width: fit-content !important;
+            table-layout: auto;
+            border-width: 1px;
+            display: none;
+        }
+
+        th,
+        td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #dddddd9f !important;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #dddddd9f;
+        }
+    </style>
+
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.5/css/dataTables.bootstrap5.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css"> -->
+
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script src="https://cdn.datatables.net/2.1.4/js/dataTables.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.4/css/dataTables.dataTables.css" />
+
+    <script type="text/javascript" src="https://cdn.datatables.net/2.1.4/js/dataTables.bootstrap5.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/2.1.4/css/dataTables.bootstrap5.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.25/css/jquery.dataTables.min.css"> -->
+</head>
+
+<body>
+    <div id="header-div">
+        <h2>Stock Crash Information</h2>
+    </div>
+
+    <div class="col-md-12" style="margin-left: 215px;">
+        <label for="min">Min Current Price:</label>
+        <input class="form-control" type="text" id="min" name="min">
+        <label for="max">Max Current Price:</label>
+        <input class="form-control" type="text" id="max" name="max">
+        <button class="btn btn-success" id="filterButton">Filter</button>
+    </div>
+    <div style="display: flex; justify-content: center;">
+        <img id="loader" src="graphGif.gif"><img>
+    </div>
+
+    <table class="form-control" id="stock-table">
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Ticker</th>
+                <th>Title</th>
+                <th>Current Price</th>
+                <th>52-Week High</th>
+                <th>52-Week Low</th>
+                <th>% Change</th>
+                <th>View Graph</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be appended here by jQuery -->
+        </tbody>
+    </table>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.1.5/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/2.1.5/js/dataTables.bootstrap5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script> -->
+    <script>
+        $(document).ready(function () {
+            var stock_information = {};
+            var table = undefined;
+            fetch('stock_information.json')
+                .then(response => response.json())
+                .then(data => {
+                    stock_information = data;
+                    $.each(stock_information, function (ticker, info) {
+                        var row = '<tr>' +
+                            '<td>' + ticker + '</td>' +
+                            '<td>' + info.ticker + '</td>' +
+                            '<td>' + info.title + '</td>' +
+                            '<td>' + info.current_price?.toFixed(2) + '</td>' +
+                            '<td>' + info.week_52_high?.toFixed(2) + '</td>' +
+                            '<td>' + info.week_52_low?.toFixed(2) + '</td>' +
+                            '<td>' + info.percent_change?.toFixed(2) + '%</td>' +
+                            '<td> <a href="https://www.google.com/finance/quote/' + info.ticker + ':NYSE" target="_blank">NYSE ↗</a> or <a href="https://www.google.com/finance/quote/' + info.ticker + ':NASDAQ" target="_blank">NASDAQ ↗</a></td>' +
+                            '</tr>';
+                        if (info.current_price)
+                            $('#stock-table tbody').append(row);
+                    });
+                    table = new DataTable('#stock-table');
+                    $('#stock-table').show();
+                    $('#loader').hide();
+                })
+                .catch(error => {
+                    console.error('Error loading JSON file:', error);
+                });
+            $.fn.dataTable.ext.search.push(
+                function (settings, data, dataIndex) {
+                    var min = parseFloat($('#min').val(), 10);
+                    var max = parseFloat($('#max').val(), 10);
+                    var curCostColumn = parseFloat(data[3]) || 0;
+
+                    if ((isNaN(min) && isNaN(max)) ||
+                        (isNaN(min) && curCostColumn <= max) ||
+                        (min <= curCostColumn && isNaN(max)) ||
+                        (min <= curCostColumn && curCostColumn <= max)) {
+                        return true;
+                    }
+                    return false;
+                }
+            );
+            $('#filterButton').click(function () {
+                table.draw();
+            });
+        });
+    </script>
+
+</body>
+
+</html>
