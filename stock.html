@@ -60,7 +60,7 @@
         }
     </style>
 
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/x-icon" href="https://rawgit.com/sheetalmjkrishna/stock/favicon.ico">
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.5/css/dataTables.bootstrap5.css" />
     <link rel="stylesheet" type="text/css"
         href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
@@ -95,7 +95,7 @@
         <button class="btn btn-success" id="filterButton">Filter</button>
     </div>
     <div style="display: flex; justify-content: center;">
-        <img id="loader" src="graphGif.gif"><img>
+        <img id="loader" src="https://rawgit.com/sheetalmjkrishna/stock/graphGif.gif"><img>
     </div>
 
     <table class="form-control" id="stock-table">
@@ -125,7 +125,7 @@
         $(document).ready(function () {
             var stock_information = {};
             var table = undefined;
-            fetch('stock_information.json')
+            fetch('https://rawgit.com/sheetalmjkrishna/stock/stock_information.json')
                 .then(response => response.json())
                 .then(data => {
                     stock_information = data;
